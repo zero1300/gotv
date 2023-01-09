@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+
+  db:
+    image: postgres:14
+    restart: always
+    privileged: true
+    environment:
+      POSTGRES_PASSWORD: Root@1998
+    ports:
+      - 5432:5432
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
