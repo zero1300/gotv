@@ -13,13 +13,12 @@ func main() {
 	db := load.NewDatabase()
 	rc := load.NewRedisClient()
 	ginRouter := router.NewGinRouter()
+	ginRouter.Engine.Use(common.Cors())
 
 	admin := ginRouter.Engine.Group("/admin")
-	admin.Use(common.Cors())
 	admin.Use(common.AdminAuth)
 
 	api := ginRouter.Engine.Group("api")
-	api.Use(common.Cors())
 
 	// user
 	userDao := user.NewUserDao(db)
