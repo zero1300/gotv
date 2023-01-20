@@ -145,12 +145,12 @@ func (u *UserHandler) userList(ctx *gin.Context) {
 	if p.PageSize == 0 || p.PageSize < 0 {
 		p.PageSize = 10
 	}
-	users, err := u.userDao.userList(p)
+	pager, err := u.userDao.userList(p)
 	if err != nil {
 		resp.Fail(ctx, "查询失败："+err.Error())
 		return
 	}
-	resp.Success(ctx, users)
+	resp.Success(ctx, pager)
 }
 
 // User Info

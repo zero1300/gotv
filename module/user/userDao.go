@@ -2,6 +2,7 @@ package user
 
 import (
 	"gotv/model"
+	"gotv/resp"
 
 	"gorm.io/gorm"
 )
@@ -33,19 +34,25 @@ func (u *UserDao) QueryByPhone(phone string) *model.User {
 	return &user
 }
 
-func (u *UserDao) userList(p model.Page) ([]model.User, error) {
+func (u *UserDao) userList(p model.Page) (resp.Pager, error) {
 
 	users := make([]model.User, 10)
 
+	pager := resp.Pager{}
+
+	var total int64
+
 	if p.Keyword != "" {
-		u.db.Debug().Limit(p.PageSize).Offset((p.PageNum-1)*p.PageSize).Where("nickname LIKE ?", "%"+p.Keyword+"%").Find(&users)
+		u.db.Debug().Model(model.User{}).Where("nickname LIKE ?", "%"+p.Keyword+"%").Count(&total).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&users)
 	} else {
-		u.db.Debug().Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&users)
+		u.db.Debug().Model(model.User{}).Count(&total).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&users)
 	}
 	err := u.db.Error
+	pager.List = users
+	pager.Total = total
 	if err != nil {
-		return nil, err
+		return resp.Pager{}, err
 	}
-	return users, nil
+	return pager, nil
 
 }
