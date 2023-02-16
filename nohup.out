@@ -1,0 +1,74 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/user/sms/:phone      --> gotv/module/user.(*UserHandler).VerificationCode-fm (4 handlers)
+[GIN-debug] POST   /api/user/register        --> gotv/module/user.(*UserHandler).UserRegister-fm (4 handlers)
+[GIN-debug] POST   /api/user/login           --> gotv/module/user.(*UserHandler).UserLogin-fm (4 handlers)
+[GIN-debug] DELETE /admin/user/:id           --> gotv/module/user.(*UserHandler).DelUser-fm (5 handlers)
+[GIN-debug] POST   /admin/user/list          --> gotv/module/user.(*UserHandler).userList-fm (5 handlers)
+[GIN-debug] GET    /admin/user/userinfo      --> gotv/module/user.(*UserHandler).userInfo-fm (5 handlers)
+[GIN-debug] GET    /admin/user/:id           --> gotv/module/user.(*UserHandler).getUserById-fm (5 handlers)
+[GIN-debug] POST   /admin/user/update        --> gotv/module/user.(*UserHandler).changeUserInfo-fm (5 handlers)
+[GIN-debug] GET    /api/video/getOne         --> gotv/module/video.(*VideoHandler).getOne-fm (5 handlers)
+[GIN-debug] POST   /api/file/upload          --> gotv/module/file.FileController.uplaod-fm (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Environment variable PORT is undefined. Using port :8080 by default
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN-debug] [ERROR] listen tcp :8080: bind: address already in use
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/user/sms/:phone      --> gotv/module/user.(*UserHandler).VerificationCode-fm (4 handlers)
+[GIN-debug] POST   /api/user/register        --> gotv/module/user.(*UserHandler).UserRegister-fm (4 handlers)
+[GIN-debug] POST   /api/user/login           --> gotv/module/user.(*UserHandler).UserLogin-fm (4 handlers)
+[GIN-debug] DELETE /admin/user/:id           --> gotv/module/user.(*UserHandler).DelUser-fm (5 handlers)
+[GIN-debug] POST   /admin/user/list          --> gotv/module/user.(*UserHandler).userList-fm (5 handlers)
+[GIN-debug] GET    /admin/user/userinfo      --> gotv/module/user.(*UserHandler).userInfo-fm (5 handlers)
+[GIN-debug] GET    /admin/user/:id           --> gotv/module/user.(*UserHandler).getUserById-fm (5 handlers)
+[GIN-debug] POST   /admin/user/update        --> gotv/module/user.(*UserHandler).changeUserInfo-fm (5 handlers)
+[GIN-debug] GET    /api/video/getOne         --> gotv/module/video.(*VideoHandler).getOne-fm (5 handlers)
+[GIN-debug] POST   /api/file/upload          --> gotv/module/file.FileController.uplaod-fm (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Environment variable PORT is undefined. Using port :8080 by default
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/user/sms/:phone      --> gotv/module/user.(*UserHandler).VerificationCode-fm (4 handlers)
+[GIN-debug] POST   /api/user/register        --> gotv/module/user.(*UserHandler).UserRegister-fm (4 handlers)
+[GIN-debug] POST   /api/user/login           --> gotv/module/user.(*UserHandler).UserLogin-fm (4 handlers)
+[GIN-debug] DELETE /admin/user/:id           --> gotv/module/user.(*UserHandler).DelUser-fm (5 handlers)
+[GIN-debug] POST   /admin/user/list          --> gotv/module/user.(*UserHandler).userList-fm (5 handlers)
+[GIN-debug] GET    /admin/user/userinfo      --> gotv/module/user.(*UserHandler).userInfo-fm (5 handlers)
+[GIN-debug] GET    /admin/user/:id           --> gotv/module/user.(*UserHandler).getUserById-fm (5 handlers)
+[GIN-debug] POST   /admin/user/update        --> gotv/module/user.(*UserHandler).changeUserInfo-fm (5 handlers)
+[GIN-debug] GET    /api/video/getOne         --> gotv/module/video.(*VideoHandler).getOne-fm (5 handlers)
+[GIN-debug] POST   /api/file/upload          --> gotv/module/file.FileController.uplaod-fm (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Environment variable PORT is undefined. Using port :8080 by default
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN-debug] [ERROR] listen tcp :8080: bind: address already in use
+{"id":"1605401198477709312","phone":"18318199782","avator":"https://www.dianler.com/wp-content/uploads/2022/08/2022080805195326.jpg","nickname":"神子"}
+true
+[GIN] 2023/02/13 - 21:35:06 | 200 |    4.816842ms |   192.168.10.11 | GET      "/admin/user/userinfo"
+{"id":"1605401198477709312","phone":"18318199782","avator":"https://www.dianler.com/wp-content/uploads/2022/08/2022080805195326.jpg","nickname":"神子"}
+true
+[GIN] 2023/02/13 - 21:37:27 | 200 |     865.395µs |   192.168.10.11 | GET      "/admin/user/userinfo"
+{"id":"1605401198477709312","phone":"18318199782","avator":"https://www.dianler.com/wp-content/uploads/2022/08/2022080805195326.jpg","nickname":"神子"}
+true
+[GIN] 2023/02/13 - 21:39:06 | 200 |     778.809µs |   192.168.10.11 | GET      "/admin/user/userinfo"
+{"id":"1605401198477709312","phone":"18318199782","avator":"https://www.dianler.com/wp-content/uploads/2022/08/2022080805195326.jpg","nickname":"神子"}
+true
+[GIN] 2023/02/13 - 21:40:07 | 200 |     771.492µs |   192.168.10.11 | GET      "/admin/user/userinfo"

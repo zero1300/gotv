@@ -7,7 +7,7 @@ type User struct {
 	Phone    string `form:"phone" binding:"required" json:"phone" grom:"phone"`
 	Code     string `form:"code" binding:"required" gorm:"-" json:"-"`
 	Password string `form:"password" json:"-"`
-	Avator   string `json:"avator"`
+	Avatar   string `json:"avatar"`
 	Nickname string `json:"nickname"`
 }
 

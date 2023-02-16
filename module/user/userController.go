@@ -118,13 +118,12 @@ func (u *UserHandler) VerificationCode(ctx *gin.Context) {
 
 // Del User
 func (u *UserHandler) DelUser(ctx *gin.Context) {
-	var ids []int
-	err := ctx.ShouldBind(ids)
-	if err != nil || len(ids) == 0 {
+	id := ctx.Param("id")
+	if id == "" {
 		resp.Fail(ctx, "参数异常")
 		return
 	}
-	err = u.userDao.DelUser(ids)
+	err := u.userDao.DelUser(id)
 	if err != nil {
 		resp.Fail(ctx, "删除失败")
 		return
@@ -153,10 +152,31 @@ func (u *UserHandler) userList(ctx *gin.Context) {
 	resp.Success(ctx, pager)
 }
 
-// User Info
+// User Info By token
 func (u *UserHandler) userInfo(ctx *gin.Context) {
 	obj, _ := ctx.Get("user")
 	user := obj.(*model.User)
+	resp.Success(ctx, user)
+}
+
+func (u *UserHandler) getUserById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		resp.Fail(ctx, "参数异常")
+		return
+	}
+	user := u.userDao.GetUser(id)
+	if user.ID == 0 {
+		resp.Fail(ctx, "用户不存在")
+		return
+	}
+	resp.Success(ctx, user)
+}
+
+func (u *UserHandler) changeUserInfo(ctx *gin.Context) {
+	var user model.User
+	ctx.ShouldBind(&user)
+	u.userDao.updateUser(user)
 	resp.Success(ctx, user)
 }
 
@@ -168,7 +188,14 @@ func (u *UserHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	user.POST("/login", u.UserLogin)
 
 	adminUser := admin.Group("/user")
-	adminUser.POST("/delUsers", u.DelUser)
+	adminUser.DELETE("/:id", u.DelUser)
 	adminUser.POST("/list", u.userList)
 	adminUser.GET("/userinfo", u.userInfo)
+	adminUser.GET("/:id", u.getUserById)
+	adminUser.POST("/update", u.changeUserInfo)
+}
+
+func (u *UserHandler) SetUp2(admin *gin.RouterGroup, api *gin.RouterGroup) {
+	user := api.Group("/user")
+	user.GET("/userinfo", u.userInfo)
 }
