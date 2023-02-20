@@ -1,6 +1,7 @@
 package load
 
 import (
+	"gotv/model"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -9,7 +10,7 @@ import (
 
 func NewDatabase() *gorm.DB {
 	dsn := "host=localhost user=postgres password=Root@1998 dbname=gotv port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true})
 	if err != nil {
 		log.Fatalln("数据库连接失败: " + err.Error())
 	}
@@ -19,5 +20,7 @@ func NewDatabase() *gorm.DB {
 	sqlDb.SetMaxIdleConns(10)
 	// 设置最大的空闲连接数
 	sqlDb.SetMaxOpenConns(10)
+
+	db.Migrator().AutoMigrate(&model.Comment{})
 	return db
 }

@@ -15,7 +15,7 @@ func Auth(ctx *gin.Context) {
 	context := context.Background()
 	token := ctx.GetHeader("token")
 	if token == "" || len(token) != 64 {
-		resp.Fail(ctx, "token不能为空或token格式异常")
+		ctx.JSON(203, gin.H{"msg": "token不能为空或token格式异常"})
 		ctx.Abort()
 		return
 	}

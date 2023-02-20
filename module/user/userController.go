@@ -159,6 +159,13 @@ func (u *UserHandler) userInfo(ctx *gin.Context) {
 	resp.Success(ctx, user)
 }
 
+// User Info By uid
+func (u *UserHandler) userInfoByUid(ctx *gin.Context) {
+	uid := ctx.Param("uid")
+	user := u.userDao.GetUser(uid)
+	resp.Success(ctx, user)
+}
+
 func (u *UserHandler) getUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -191,6 +198,7 @@ func (u *UserHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	adminUser.DELETE("/:id", u.DelUser)
 	adminUser.POST("/list", u.userList)
 	adminUser.GET("/userinfo", u.userInfo)
+	adminUser.GET("/userinfo/:uid", u.userInfoByUid)
 	adminUser.GET("/:id", u.getUserById)
 	adminUser.POST("/update", u.changeUserInfo)
 }

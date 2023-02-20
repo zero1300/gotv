@@ -2,6 +2,10 @@ package video
 
 import (
 	"context"
+	"fmt"
+	"gotv/common"
+	"gotv/model"
+	"gotv/resp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v9"
@@ -17,6 +21,41 @@ func NewVideoHandler(videoDao *VideoDao, rc *redis.Client) *VideoHandler {
 	return &VideoHandler{videoDao: videoDao, context: context.Background(), rc: rc}
 }
 
+func (v *VideoHandler) addVideo(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	var video model.Video
+	ctx.ShouldBind(&video)
+	url := common.OSS_BASE_URL + video.Uri
+	fmt.Println(url)
+	duration, err := duration(url)
+	if err != nil {
+		resp.Fail(ctx, "获取视频时长失败,请稍后再试...")
+		return
+	}
+	d := duration.String()
+	video.Duration = d
+	video.UID = user.ID
+	v.videoDao.addVideo(video)
+	resp.Success(ctx, video)
+}
+
+func (v *VideoHandler) getVideoListByUid(ctx *gin.Context) {
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	pager, err := v.videoDao.getVideoListByUid(user.ID, p)
+	if err != nil {
+		resp.Fail(ctx, "查询失败："+err.Error())
+		return
+	}
+	resp.Success(ctx, pager)
+}
+
 func (v *VideoHandler) getOne(ctx *gin.Context) {
 	v.videoDao.GetVideoById(123)
 }
@@ -25,4 +64,6 @@ func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 
 	video := api.Group("/video")
 	video.GET("/getOne", v.getOne)
+	video.POST("/upload", v.addVideo)
+	video.POST("/listByUid", v.getVideoListByUid)
 }

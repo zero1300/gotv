@@ -3,6 +3,7 @@ package main
 import (
 	"gotv/common"
 	"gotv/load"
+	"gotv/module/comment"
 	"gotv/module/file"
 	"gotv/module/user"
 	"gotv/module/video"
@@ -40,5 +41,9 @@ func main() {
 	fileController := file.NewFileController(fileDao, rc, mc)
 	fileController.SetUp(admin, api)
 
+	// comment
+	commentDao := comment.NewCommentDao(db)
+	commentController := comment.NewCommentController(commentDao)
+	commentController.SetUp(admin, api)
 	ginRouter.Engine.Run()
 }
