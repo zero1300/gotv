@@ -7,6 +7,8 @@ import (
 	"gotv/model"
 	"gotv/resp"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v9"
 )
@@ -30,11 +32,13 @@ func (v *VideoHandler) addVideo(ctx *gin.Context) {
 	fmt.Println(url)
 	duration, err := duration(url)
 	if err != nil {
+		log.Error(err.Error())
 		resp.Fail(ctx, "获取视频时长失败,请稍后再试...")
 		return
 	}
-	d := duration.String()
-	video.Duration = d
+	// TODO fix
+	_ = duration.String()
+	video.Duration = "0"
 	video.UID = user.ID
 	v.videoDao.addVideo(video)
 	resp.Success(ctx, video)

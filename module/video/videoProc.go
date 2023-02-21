@@ -11,7 +11,8 @@ import (
 
 func duration(url string) (time.Duration, error) {
 	c := fmt.Sprintf("ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 -i %s", url)
-	cmd := exec.Command("bash", "-c", c)
+	fmt.Println(c)
+	cmd := exec.Command("cmd", c)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(err)
