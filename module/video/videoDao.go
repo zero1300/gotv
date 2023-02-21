@@ -61,6 +61,11 @@ func (v *VideoDao) latestVideo(p model.Page) (resp.Pager, error) {
 	return pager, nil
 }
 
+func (v *VideoDao) addViews(vid string) {
+	fmt.Println("get in")
+	v.db.Debug().Model(model.Video{}).Where("id = ?", vid).UpdateColumn("views", gorm.Expr("views + ?", 1))
+}
+
 func (v *VideoDao) GetVideoById(id int) {
 	fmt.Println("...")
 }

@@ -78,10 +78,17 @@ func (v *VideoHandler) getOne(ctx *gin.Context) {
 	v.videoDao.GetVideoById(123)
 }
 
+func (v *VideoHandler) addViews(ctx *gin.Context) {
+	vid := ctx.Param("vid")
+	fmt.Println(vid)
+	v.videoDao.addViews(vid)
+}
+
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video := api.Group("/video")
 	video.GET("/getOne", v.getOne)
 	video.POST("/upload", v.addVideo)
 	video.POST("/listByUid", v.getVideoListByUid)
 	video.POST("/recommend", v.videoRecommend)
+	video.GET("/addViews/:vid", v.addViews)
 }
