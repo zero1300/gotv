@@ -167,7 +167,7 @@ func (u *UserHandler) userInfoByUid(ctx *gin.Context) {
 }
 
 func (u *UserHandler) getUserById(ctx *gin.Context) {
-	id := ctx.Param("id")
+	id := ctx.Param("uid")
 	if id == "" {
 		resp.Fail(ctx, "参数异常")
 		return
@@ -193,6 +193,7 @@ func (u *UserHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	user.GET("/sms/:phone", u.VerificationCode)
 	user.POST("/register", u.UserRegister)
 	user.POST("/login", u.UserLogin)
+	user.GET("/userinfo/:uid", u.getUserById)
 
 	adminUser := admin.Group("/user")
 	adminUser.DELETE("/:id", u.DelUser)

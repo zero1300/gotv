@@ -52,7 +52,7 @@ func (v *VideoDao) latestVideo(p model.Page) (resp.Pager, error) {
 		user.ID = videoVos[i].UID
 		v.db.Model(model.User{}).First(&user)
 		videoVos[i].Nickname = user.Nickname
-		fmt.Println(videoVos[i])
+		videoVos[i].CreateTimeString = videoVos[i].CreateTime.Format("2006-01-02 15:04")
 	}
 
 	pager := resp.Pager{}
