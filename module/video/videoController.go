@@ -56,14 +56,28 @@ func (v *VideoHandler) getVideoListByUid(ctx *gin.Context) {
 	resp.Success(ctx, pager)
 }
 
+func (v *VideoHandler) videoRecommend(ctx *gin.Context) {
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+	pager, err := v.videoDao.latestVideo(p)
+	if err != nil {
+		resp.Fail(ctx, "查询失败: "+err.Error())
+		return
+	}
+	resp.Success(ctx, pager)
+}
+
 func (v *VideoHandler) getOne(ctx *gin.Context) {
 	v.videoDao.GetVideoById(123)
 }
 
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
-
 	video := api.Group("/video")
 	video.GET("/getOne", v.getOne)
 	video.POST("/upload", v.addVideo)
 	video.POST("/listByUid", v.getVideoListByUid)
+	video.POST("/recommend", v.videoRecommend)
 }

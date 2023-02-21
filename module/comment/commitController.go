@@ -36,7 +36,27 @@ func (c commentController) comment(ctx *gin.Context) {
 	resp.Success(ctx, comment)
 }
 
+// 获得视频下的评论
+func (c commentController) commentList(ctx *gin.Context) {
+	vid := ctx.Param("vid")
+
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+
+	data, err := c.commentDao.commentList(vid, p)
+	if err != nil {
+		resp.Fail(ctx, err.Error())
+		return
+	}
+	resp.Success(ctx, data)
+
+}
+
 func (c commentController) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	comment := api.Group("comment")
 	comment.POST("/", c.comment)
+	comment.POST("/list/:vid", c.commentList)
 }

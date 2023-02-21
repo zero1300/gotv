@@ -3,6 +3,7 @@ package video
 import (
 	"fmt"
 	"gotv/model"
+	"gotv/model/vo"
 	"gotv/resp"
 
 	"github.com/bwmarrin/snowflake"
@@ -35,6 +36,27 @@ func (v *VideoDao) getVideoListByUid(uid uint, p model.Page) (resp.Pager, error)
 	}
 	pager := resp.Pager{}
 	pager.List = videos
+	pager.Total = total
+	return pager, nil
+}
+
+func (v *VideoDao) latestVideo(p model.Page) (resp.Pager, error) {
+	videoVos := make([]vo.VideoVo, 10)
+	var total int64
+	err := v.db.Debug().Model(model.Video{}).Order("create_time desc").Count(&total).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videoVos).Error
+	if err != nil {
+		return resp.Pager{}, err
+	}
+	for i := 0; i < len(videoVos); i++ {
+		var user model.User
+		user.ID = videoVos[i].UID
+		v.db.Model(model.User{}).First(&user)
+		videoVos[i].Nickname = user.Nickname
+		fmt.Println(videoVos[i])
+	}
+
+	pager := resp.Pager{}
+	pager.List = videoVos
 	pager.Total = total
 	return pager, nil
 }
