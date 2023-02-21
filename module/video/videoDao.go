@@ -52,6 +52,9 @@ func (v *VideoDao) latestVideo(p model.Page) (resp.Pager, error) {
 		user.ID = videoVos[i].UID
 		v.db.Model(model.User{}).First(&user)
 		videoVos[i].Nickname = user.Nickname
+		var count int64
+		v.db.Model(model.Comment{}).Where("vid = ?", videoVos[i].ID).Count(&count)
+		videoVos[i].Comments = count
 		videoVos[i].CreateTimeString = videoVos[i].CreateTime.Format("2006-01-02 15:04")
 	}
 
