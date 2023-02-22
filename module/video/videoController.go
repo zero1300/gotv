@@ -118,6 +118,22 @@ func (v *VideoHandler) cancelDislike(ctx *gin.Context) {
 	v.videoDao.cancelDislike(id, user.ID)
 }
 
+func (v *VideoHandler) getLikeRecord(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	id := ctx.Param("vid")
+	b := v.videoDao.getLikeRecord(id, user.ID)
+	resp.Success(ctx, b)
+}
+
+func (v *VideoHandler) getDislikeRecord(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	id := ctx.Param("vid")
+	b := v.videoDao.getDislikeRecord(id, user.ID)
+	resp.Success(ctx, b)
+}
+
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video := api.Group("/video")
 	video.GET("/getOne", v.getOne)
@@ -129,4 +145,6 @@ func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video.GET("/cancelLike/:vid", v.cancelLike)
 	video.GET("/addDislike/:vid", v.addDisLike)
 	video.GET("/cancelDislike/:vid", v.cancelDislike)
+	video.GET("getLikeRecord/:vid", v.getLikeRecord)
+	video.GET("/getDislikeRecord/:vid", v.getDislikeRecord)
 }
