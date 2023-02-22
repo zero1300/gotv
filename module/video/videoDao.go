@@ -5,6 +5,7 @@ import (
 	"gotv/model"
 	"gotv/model/vo"
 	"gotv/resp"
+	"strconv"
 
 	"github.com/bwmarrin/snowflake"
 	"gorm.io/gorm"
@@ -65,10 +66,35 @@ func (v *VideoDao) latestVideo(p model.Page) (resp.Pager, error) {
 }
 
 func (v *VideoDao) addViews(vid string) {
-	fmt.Println("get in")
 	v.db.Debug().Model(model.Video{}).Where("id = ?", vid).UpdateColumn("views", gorm.Expr("views + ?", 1))
 }
 
-func (v *VideoDao) GetVideoById(id int) {
-	fmt.Println("...")
+func (v *VideoDao) addLike(vid string, uid uint) {
+	fmt.Println(uid)
+	if v.getLikeRecord(vid, uid) == 1 {
+		return
+	}
+	v.db.Debug().Model(model.Video{}).Where("id = ?", vid).UpdateColumn("like", gorm.Expr(`"like" + ?`, 1))
+	var like_record model.LikeRecordModel
+	node, _ := snowflake.NewNode(1)
+	id := node.Generate().Int64()
+	like_record.ID = uint(id)
+	like_record.UID = uid
+	u64, _ := strconv.ParseUint(vid, 10, 64)
+	like_record.VID = u64
+	v.db.Debug().Model(model.LikeRecordModel{}).Create(&like_record)
+}
+
+func (v *VideoDao) cancelLike(vid string, uid uint) {
+	if v.getLikeRecord(vid, uid) == 0 {
+		return
+	}
+	v.db.Debug().Model(model.Video{}).Where("id = ?", vid).UpdateColumn("like", gorm.Expr(`"like" - ?`, 1))
+	v.db.Debug().Model(model.LikeRecordModel{}).Where("vid = ? and uid = ?", vid, uid).Delete(&model.LikeRecordModel{})
+}
+
+func (v *VideoDao) getLikeRecord(vid string, uid uint) int64 {
+	var count int64
+	v.db.Debug().Model(model.LikeRecordModel{}).Where("vid = ? and uid = ?", vid, uid).Count(&count)
+	return count
 }

@@ -75,14 +75,34 @@ func (v *VideoHandler) videoRecommend(ctx *gin.Context) {
 }
 
 func (v *VideoHandler) getOne(ctx *gin.Context) {
-	v.videoDao.GetVideoById(123)
+
 }
 
 func (v *VideoHandler) addViews(ctx *gin.Context) {
+
 	vid := ctx.Param("vid")
 	fmt.Println(vid)
 	v.videoDao.addViews(vid)
 }
+
+// 点赞视频
+func (v *VideoHandler) addLike(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	id := ctx.Param("vid")
+	v.videoDao.addLike(id, user.ID)
+}
+
+// 取消点赞视频
+func (v *VideoHandler) cancelLike(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	id := ctx.Param("vid")
+	fmt.Println(id)
+	v.videoDao.cancelLike(id, user.ID)
+}
+
+// 点踩视频
 
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video := api.Group("/video")
@@ -91,4 +111,6 @@ func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video.POST("/listByUid", v.getVideoListByUid)
 	video.POST("/recommend", v.videoRecommend)
 	video.GET("/addViews/:vid", v.addViews)
+	video.GET("/addLike/:vid", v.addLike)
+	video.GET("/cancelLike/:vid", v.cancelLike)
 }
