@@ -93,8 +93,32 @@ func (v *VideoDao) cancelLike(vid string, uid uint) {
 	v.db.Debug().Model(model.LikeRecordModel{}).Where("vid = ? and uid = ?", vid, uid).Delete(&model.LikeRecordModel{})
 }
 
+func (v *VideoDao) addDisLike(vid string, uid uint) {
+	if v.getDislikeRecord(vid, uid) == 1 {
+		return
+	}
+	var dislike_record model.DislikeRecord
+	u64, _ := strconv.ParseUint(vid, 10, 64)
+	dislike_record.VID = u64
+	dislike_record.UID = uid
+	v.db.Debug().Model(model.DislikeRecord{}).Create(&dislike_record)
+
+}
+
+func (v *VideoDao) cancelDislike(vid string, uid uint) {
+	if v.getDislikeRecord(vid, uid) == 0 {
+		return
+	}
+	v.db.Debug().Model(model.DislikeRecord{}).Where("vid = ? and uid = ?", vid, uid).Delete(&model.LikeRecordModel{})
+}
 func (v *VideoDao) getLikeRecord(vid string, uid uint) int64 {
 	var count int64
 	v.db.Debug().Model(model.LikeRecordModel{}).Where("vid = ? and uid = ?", vid, uid).Count(&count)
+	return count
+}
+
+func (v *VideoDao) getDislikeRecord(vid string, uid uint) int64 {
+	var count int64
+	v.db.Debug().Model(model.DislikeRecord{}).Where("vid = ? and uid = ?", vid, uid).Count(&count)
 	return count
 }

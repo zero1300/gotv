@@ -103,6 +103,20 @@ func (v *VideoHandler) cancelLike(ctx *gin.Context) {
 }
 
 // 点踩视频
+func (v *VideoHandler) addDisLike(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	id := ctx.Param("vid")
+	v.videoDao.addDisLike(id, user.ID)
+}
+
+// 取消点踩视频
+func (v *VideoHandler) cancelDislike(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	id := ctx.Param("vid")
+	v.videoDao.cancelDislike(id, user.ID)
+}
 
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video := api.Group("/video")
@@ -113,4 +127,6 @@ func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video.GET("/addViews/:vid", v.addViews)
 	video.GET("/addLike/:vid", v.addLike)
 	video.GET("/cancelLike/:vid", v.cancelLike)
+	video.GET("/addDislike/:vid", v.addDisLike)
+	video.GET("/cancelDislike/:vid", v.cancelDislike)
 }
