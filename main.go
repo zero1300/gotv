@@ -4,6 +4,7 @@ import (
 	"gotv/common"
 	"gotv/load"
 	"gotv/module/comment"
+	"gotv/module/fav"
 	"gotv/module/file"
 	"gotv/module/user"
 	"gotv/module/video"
@@ -45,5 +46,12 @@ func main() {
 	commentDao := comment.NewCommentDao(db)
 	commentController := comment.NewCommentController(commentDao)
 	commentController.SetUp(admin, api)
+
+	// fav
+	favDao := fav.NewFavDao(db)
+	favController := fav.NewFavController(favDao)
+	favController.SetUp(admin, api)
+
 	ginRouter.Engine.Run()
+
 }

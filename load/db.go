@@ -21,6 +21,6 @@ func NewDatabase() *gorm.DB {
 	// 设置最大的空闲连接数
 	sqlDb.SetMaxOpenConns(10)
 
-	db.Migrator().AutoMigrate(&model.Comment{}, &model.LikeRecordModel{}, &model.DislikeRecord{})
+	db.Migrator().AutoMigrate(&model.Comment{}, &model.LikeRecordModel{}, &model.DislikeRecord{}, &model.Fav{})
 	return db
 }
