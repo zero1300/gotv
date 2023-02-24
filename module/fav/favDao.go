@@ -61,7 +61,7 @@ func (f *favDao) favList(p model.Page, uid uint) (resp.Pager, error) {
 		fmt.Println(c)
 		videoVo.Comments = c
 		videoVo.CreateTimeString = videoVo.CreateTime.Format("2006-01-02 15:04")
-		videoVos = append(videoVos,videoVo)
+		videoVos = append(videoVos, videoVo)
 	}
 	pager := resp.Pager{}
 	pager.List = videoVos
