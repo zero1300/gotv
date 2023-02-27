@@ -32,7 +32,7 @@ func NewFileController(fileDao *fileDao, rc *redis.Client, mc *minio.Client) *Fi
 	}
 }
 
-func (f FileController) uplaod(ctx *gin.Context) {
+func (f FileController) upload(ctx *gin.Context) {
 	file, err := ctx.FormFile("file")
 	print(file)
 	if err != nil {
@@ -63,5 +63,5 @@ func (f FileController) uplaod(ctx *gin.Context) {
 func (u *FileController) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	file := api.Group("/file")
 
-	file.POST("/upload", u.uplaod)
+	file.POST("/upload", u.upload)
 }

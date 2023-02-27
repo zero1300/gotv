@@ -12,7 +12,6 @@ type commentController struct {
 	commentDao *commentDao
 }
 
-// 构造函数
 func NewCommentController(commentDao *commentDao) *commentController {
 	return &commentController{
 		commentDao: commentDao,

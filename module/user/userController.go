@@ -200,7 +200,7 @@ func (u *UserHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	adminUser.POST("/list", u.userList)
 	adminUser.GET("/userinfo", u.userInfo)
 	adminUser.GET("/userinfo/:uid", u.userInfoByUid)
-	adminUser.GET("/:id", u.getUserById)
+	adminUser.GET("/:uid", u.getUserById)
 	adminUser.POST("/update", u.changeUserInfo)
 }
 

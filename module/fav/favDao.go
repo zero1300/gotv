@@ -9,36 +9,41 @@ import (
 	"gorm.io/gorm"
 )
 
-type favDao struct {
+type FavDao struct {
 	db *gorm.DB
 }
 
-func NewFavDao(db *gorm.DB) *favDao {
-	return &favDao{db: db}
+func NewFavDao(db *gorm.DB) *FavDao {
+	return &FavDao{db: db}
 }
 
-func (f *favDao) addFav(fav model.Fav) error {
+func (f *FavDao) addFav(fav model.Fav) error {
 	if f.getFav(fav) == 1 {
 		return nil
 	}
 	return f.db.Create(&fav).Error
 }
 
-func (f *favDao) getFav(fav model.Fav) int64 {
+func (f *FavDao) getFav(fav model.Fav) int64 {
 	var count int64
 	f.db.Debug().Model(model.Fav{}).Where("uid = ? and vid = ?", fav.UID, fav.VID).Count(&count)
 	fmt.Println(count)
 	return count
 }
 
-func (f *favDao) delFav(fav model.Fav) error {
+func (f *FavDao) DelFav(fav model.Fav) error {
 	if f.getFav(fav) == 0 {
 		return nil
 	}
 	return f.db.Delete(fav, "uid = ? and vid = ?", fav.UID, fav.VID).Error
 }
 
-func (f *favDao) favList(p model.Page, uid uint) (resp.Pager, error) {
+func (f *FavDao) DelFavByVid(vid string) error {
+	var fav model.Fav
+	return f.db.Delete(fav, "vid = ?", vid).Error
+}
+
+func (f *FavDao) favList(p model.Page, uid uint) (resp.Pager, error) {
 	favs := make([]model.Fav, 10)
 	var total int64
 	err := f.db.Debug().Model(model.Fav{}).Order("create_time desc").Count(&total).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&favs).Error

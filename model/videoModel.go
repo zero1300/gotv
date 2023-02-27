@@ -15,7 +15,8 @@ type Video struct {
 	Like       uint      `json:"like,string"`
 	Duration   string    `json:"duration"`
 	Views      uint      `json:"views,string"`
-	CreateTime time.Time `json:"-" gorm:"autoCreateTime" `
+	CreateTime time.Time `json:"createTime" gorm:"autoCreateTime" `
+	//DisLike    uint      `json:"disLike,string"`
 }
 
 func (Video) TableName() string {

@@ -12,7 +12,7 @@
 [GIN-debug] GET    /admin/user/userinfo      --> gotv/module/user.(*UserHandler).userInfo-fm (5 handlers)
 [GIN-debug] GET    /admin/user/:id           --> gotv/module/user.(*UserHandler).getUserById-fm (5 handlers)
 [GIN-debug] POST   /admin/user/update        --> gotv/module/user.(*UserHandler).changeUserInfo-fm (5 handlers)
-[GIN-debug] GET    /api/video/getOne         --> gotv/module/video.(*VideoHandler).getOne-fm (5 handlers)
+[GIN-debug] GET    /api/videoPo/getOne         --> gotv/module/videoPo.(*VideoHandler).getOne-fm (5 handlers)
 [GIN-debug] POST   /api/file/upload          --> gotv/module/file.FileController.uplaod-fm (5 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
@@ -33,7 +33,7 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 [GIN-debug] GET    /admin/user/userinfo      --> gotv/module/user.(*UserHandler).userInfo-fm (5 handlers)
 [GIN-debug] GET    /admin/user/:id           --> gotv/module/user.(*UserHandler).getUserById-fm (5 handlers)
 [GIN-debug] POST   /admin/user/update        --> gotv/module/user.(*UserHandler).changeUserInfo-fm (5 handlers)
-[GIN-debug] GET    /api/video/getOne         --> gotv/module/video.(*VideoHandler).getOne-fm (5 handlers)
+[GIN-debug] GET    /api/videoPo/getOne         --> gotv/module/videoPo.(*VideoHandler).getOne-fm (5 handlers)
 [GIN-debug] POST   /api/file/upload          --> gotv/module/file.FileController.uplaod-fm (5 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
@@ -53,7 +53,7 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 [GIN-debug] GET    /admin/user/userinfo      --> gotv/module/user.(*UserHandler).userInfo-fm (5 handlers)
 [GIN-debug] GET    /admin/user/:id           --> gotv/module/user.(*UserHandler).getUserById-fm (5 handlers)
 [GIN-debug] POST   /admin/user/update        --> gotv/module/user.(*UserHandler).changeUserInfo-fm (5 handlers)
-[GIN-debug] GET    /api/video/getOne         --> gotv/module/video.(*VideoHandler).getOne-fm (5 handlers)
+[GIN-debug] GET    /api/videoPo/getOne         --> gotv/module/videoPo.(*VideoHandler).getOne-fm (5 handlers)
 [GIN-debug] POST   /api/file/upload          --> gotv/module/file.FileController.uplaod-fm (5 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.

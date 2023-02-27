@@ -1,6 +1,7 @@
 package resp
 
 import (
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,13 @@ func Success(context *gin.Context, data any) {
 }
 
 func Fail(context *gin.Context, msg string) {
+	path := context.Request.URL.Path
+
+	log.WithFields(log.Fields{
+		"path": path,
+		"msg":  msg,
+	}).Error("Interface error occur...")
+
 	context.JSON(http.StatusOK, gin.H{
 		"code": 1,
 		"data": nil,

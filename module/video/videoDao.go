@@ -5,6 +5,7 @@ import (
 	"gotv/model"
 	"gotv/model/vo"
 	"gotv/resp"
+
 	"strconv"
 
 	"github.com/bwmarrin/snowflake"
@@ -17,6 +18,7 @@ type VideoDao struct {
 
 func NewVideoDao(db *gorm.DB) *VideoDao {
 	return &VideoDao{
+
 		db: db,
 	}
 }
@@ -111,6 +113,7 @@ func (v *VideoDao) cancelDislike(vid string, uid uint) {
 	}
 	v.db.Debug().Model(model.DislikeRecord{}).Where("vid = ? and uid = ?", vid, uid).Delete(&model.LikeRecordModel{})
 }
+
 func (v *VideoDao) getLikeRecord(vid string, uid uint) int64 {
 	var count int64
 	v.db.Debug().Model(model.LikeRecordModel{}).Where("vid = ? and uid = ?", vid, uid).Count(&count)
@@ -121,4 +124,102 @@ func (v *VideoDao) getDislikeRecord(vid string, uid uint) int64 {
 	var count int64
 	v.db.Debug().Model(model.DislikeRecord{}).Where("vid = ? and uid = ?", vid, uid).Count(&count)
 	return count
+}
+
+// 动态接口
+func (v *VideoDao) dynamic(p model.Page, uid uint) resp.Pager {
+
+	subs := make([]model.Sub, 0)
+	v.db.Debug().Where("fans = ?", uid).Find(&subs)
+	uids := make([]string, 0)
+	for _, sub := range subs {
+		uids = append(uids, sub.UID)
+	}
+
+	var count int64
+	videos := make([]model.Video, 0)
+	v.db.Debug().Model(model.Video{}).Where("uid in ?", uids).Count(&count).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videos)
+
+	dynamics := make([]vo.Dynamic, 0)
+	for _, video := range videos {
+		var user model.User
+		v.db.Debug().Model(model.User{}).Where("id = ?", video.UID).Find(&user)
+		var dynamic vo.Dynamic
+		dynamic.Video = video
+		dynamic.User = user
+		dynamics = append(dynamics, dynamic)
+	}
+
+	pager := resp.Pager{}
+	pager.List = dynamics
+	pager.Total = count
+	return pager
+
+}
+
+func (v VideoDao) GetVideoById(vid string) model.Video {
+	var video model.Video
+	v.db.Where("id = ?", vid).Find(&video)
+	return video
+}
+
+// 删除视频
+func (v VideoDao) delVideo(id string) error {
+
+	var video model.Video
+
+	var f model.Fav
+	v.db.Delete(f, "vid = ?", id)
+
+	var h model.History
+	v.db.Delete(h, "vid = ?", id)
+
+	return v.db.Delete(video, "id = ?", id).Error
+}
+
+// 删除 like
+func (v VideoDao) delLike(vid string) error {
+	var like model.LikeRecordModel
+	return v.db.Delete(like, "vid = ?", vid).Error
+}
+
+// 删除dislike
+func (v VideoDao) delDislike(vid string) error {
+	var disLike model.DislikeRecord
+	return v.db.Delete(disLike, "vid = ?", vid).Error
+}
+
+// ----- admin -----
+func (v VideoDao) videoAdminList(p model.Page) (resp.Pager, error) {
+	videoVos := make([]vo.VideoVo, 10)
+	var total int64
+	err := v.db.Debug().Model(model.Video{}).Order("create_time desc").Count(&total).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videoVos).Error
+	if err != nil {
+		return resp.Pager{}, err
+	}
+	for i := 0; i < len(videoVos); i++ {
+		var user model.User
+		user.ID = videoVos[i].UID
+		v.db.Model(model.User{}).First(&user)
+		videoVos[i].Nickname = user.Nickname
+		var count int64
+		v.db.Model(model.Comment{}).Where("vid = ?", videoVos[i].ID).Count(&count)
+		videoVos[i].Comments = count
+		videoVos[i].CreateTimeString = videoVos[i].CreateTime.Format("2006-01-02 15:04")
+	}
+
+	pager := resp.Pager{}
+	pager.List = videoVos
+	pager.Total = total
+	return pager, nil
+}
+
+func (v VideoDao) getVideoById(id string) model.Video {
+	var video model.Video
+	v.db.Model(model.Video{}).Where("id = ?", id).Find(&video)
+	return video
+}
+
+func (v VideoDao) updateVideoInfo(video model.Video) {
+	v.db.Model(&video).Updates(video)
 }

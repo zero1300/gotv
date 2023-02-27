@@ -6,6 +6,7 @@ import (
 	"gotv/module/comment"
 	"gotv/module/fav"
 	"gotv/module/file"
+	"gotv/module/history"
 	"gotv/module/sub"
 	"gotv/module/user"
 	"gotv/module/video"
@@ -57,6 +58,11 @@ func main() {
 	subDao := sub.NewSubDao(db)
 	subController := sub.NewSubController(subDao)
 	subController.SetUp(admin, api)
+
+	// history
+	historyDao := history.NewHistoryDao(db, videoDao, userDao)
+	historyController := history.NewHistory(historyDao)
+	historyController.Setup(admin, api)
 
 	ginRouter.Engine.Run()
 

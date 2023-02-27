@@ -6,8 +6,7 @@ import (
 	"gotv/common"
 	"gotv/model"
 	"gotv/resp"
-
-	log "github.com/sirupsen/logrus"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v9"
@@ -32,13 +31,13 @@ func (v *VideoHandler) addVideo(ctx *gin.Context) {
 	fmt.Println(url)
 	duration, err := duration(url)
 	if err != nil {
-		log.Error(err.Error())
+
 		resp.Fail(ctx, "获取视频时长失败,请稍后再试...")
 		return
 	}
 	// TODO fix
-	_ = duration.String()
-	video.Duration = "0"
+
+	video.Duration = strconv.Itoa(int(duration))
 	video.UID = user.ID
 	v.videoDao.addVideo(video)
 	resp.Success(ctx, video)
@@ -74,7 +73,25 @@ func (v *VideoHandler) videoRecommend(ctx *gin.Context) {
 	resp.Success(ctx, pager)
 }
 
+func (v VideoHandler) dynamic(ctx *gin.Context) {
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	dynamics := v.videoDao.dynamic(p, user.ID)
+	resp.Success(ctx, dynamics)
+}
+
 func (v *VideoHandler) getOne(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		return
+	}
+	video := v.videoDao.getVideoById(id)
+	resp.Success(ctx, video)
 
 }
 
@@ -134,6 +151,42 @@ func (v *VideoHandler) getDislikeRecord(ctx *gin.Context) {
 	resp.Success(ctx, b)
 }
 
+// ----- admin -----
+// 后台管理视频列表
+func (v *VideoHandler) videoAdminList(ctx *gin.Context) {
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+	pager, err := v.videoDao.videoAdminList(p)
+	if err != nil {
+		resp.Fail(ctx, "查询失败: "+err.Error())
+		return
+	}
+	resp.Success(ctx, pager)
+}
+
+func (v VideoHandler) delVideo(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		return
+	}
+	err := v.videoDao.delVideo(id)
+	if err != nil {
+		resp.Fail(ctx, err.Error())
+		return
+	}
+	resp.Success(ctx, "ok")
+}
+
+func (v VideoHandler) changeVideoInfo(ctx *gin.Context) {
+	var video model.Video
+	ctx.ShouldBind(&video)
+	v.videoDao.updateVideoInfo(video)
+	resp.Success(ctx, video)
+}
+
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video := api.Group("/video")
 	video.GET("/getOne", v.getOne)
@@ -147,4 +200,12 @@ func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video.GET("/cancelDislike/:vid", v.cancelDislike)
 	video.GET("getLikeRecord/:vid", v.getLikeRecord)
 	video.GET("/getDislikeRecord/:vid", v.getDislikeRecord)
+	video.POST("/dynamic", v.dynamic)
+	//video.DELETE("/:id", v.delVideo)
+
+	videoAdmin := admin.Group("/video")
+	videoAdmin.POST("/list", v.videoAdminList)
+	videoAdmin.DELETE("/:id", v.delVideo)
+	videoAdmin.GET("/:id", v.getOne)
+	videoAdmin.POST("/update", v.changeVideoInfo)
 }

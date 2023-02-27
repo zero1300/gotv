@@ -9,10 +9,10 @@ import (
 )
 
 type favController struct {
-	favDao *favDao
+	favDao *FavDao
 }
 
-func NewFavController(favDao *favDao) *favController {
+func NewFavController(favDao *FavDao) *favController {
 	return &favController{favDao: favDao}
 }
 
@@ -33,7 +33,8 @@ func (f favController) delFav(ctx *gin.Context) {
 	var fav model.Fav
 	fav.UID = user.ID
 	fav.VID, _ = strconv.ParseUint(vid, 10, 64)
-	f.favDao.delFav(fav)
+	_ = f.favDao.DelFav(fav)
+
 }
 
 func (f favController) getFav(ctx *gin.Context) {
