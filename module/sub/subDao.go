@@ -45,10 +45,27 @@ func (s subDao) subList(fans uint, p model.Page) resp.Pager {
 	s.db.Debug().Where("fans = ?", fans).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&subs).Count(&count)
 	users := make([]model.User, 0)
 	for _, sub := range subs {
-		s.db.Debug().Model(model.User{}).Where("id = ?", sub.UID).Find(&users)
+		var user model.User
+		s.db.Debug().Model(model.User{}).Where("id = ?", sub.UID).Find(&user)
+		users = append(users, user)
 	}
 	pager := resp.Pager{}
 	pager.List = users
 	pager.Total = count
+	return pager
+}
+
+func (s subDao) fansList(uid uint, p model.Page) resp.Pager {
+	subs := make([]model.Sub, 0)
+	s.db.Debug().Where("fans = ?", uid).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&subs)
+	users := make([]model.User, 0)
+	for _, sub := range subs {
+		var user model.User
+		s.db.Debug().Model(model.User{}).Where("id = ?", sub.UID).Find(&user)
+		users = append(users, user)
+	}
+	pager := resp.Pager{}
+	pager.List = users
+	pager.Total = int64(len(subs))
 	return pager
 }

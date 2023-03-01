@@ -62,3 +62,25 @@ func (u *UserDao) updateUser(user model.User) {
 	user.Phone = ""
 	u.db.Model(&user).Updates(user)
 }
+
+// ----- 统计接口 -----
+// 统计用户动态数量
+func (u UserDao) countUserDynamic(uid uint) int64 {
+	var count int64
+	u.db.Model(model.Video{}).Where("uid = ?", uid).Count(&count)
+	return count
+}
+
+// 统计用户关注数
+func (u UserDao) countSub(uid uint) int64 {
+	var count int64
+	u.db.Model(model.Sub{}).Where("fans = ?", uid).Count(&count)
+	return count
+}
+
+// 统计用户粉丝数量
+func (u UserDao) countFans(uid uint) int64 {
+	var count int64
+	u.db.Model(model.Sub{}).Where("uid = ?", uid).Count(&count)
+	return count
+}

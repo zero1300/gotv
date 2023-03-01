@@ -7,8 +7,8 @@ type User struct {
 	Phone    string `form:"phone" binding:"required" json:"phone" grom:"phone"`
 	Code     string `form:"code" binding:"required" gorm:"-" json:"-"`
 	Password string `form:"password" json:"-"`
-	Avatar   string `json:"avatar"`
-	Nickname string `json:"nickname"`
+	Avatar   string `json:"avatar" form:"avatar"`
+	Nickname string `json:"nickname" form:"nickname"`
 }
 
 type Tabler interface {

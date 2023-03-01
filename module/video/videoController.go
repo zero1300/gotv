@@ -73,6 +73,22 @@ func (v *VideoHandler) videoRecommend(ctx *gin.Context) {
 	resp.Success(ctx, pager)
 }
 
+// 热门视频
+func (v VideoHandler) hot(ctx *gin.Context) {
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+	hot, err := v.videoDao.hot(p)
+	if err != nil {
+		resp.Fail(ctx, "查询失败: "+err.Error())
+		return
+	}
+	resp.Success(ctx, hot)
+
+}
+
 func (v VideoHandler) dynamic(ctx *gin.Context) {
 	var p model.Page
 	if err := ctx.ShouldBind(&p); err != nil {
@@ -151,6 +167,18 @@ func (v *VideoHandler) getDislikeRecord(ctx *gin.Context) {
 	resp.Success(ctx, b)
 }
 
+func (v *VideoHandler) searchVideo(ctx *gin.Context) {
+
+	var page model.Page
+	err := ctx.ShouldBind(&page)
+	if err != nil {
+		resp.Fail(ctx, err.Error())
+		return
+	}
+	videos, _ := v.videoDao.searchVideo(page)
+	resp.Success(ctx, videos)
+}
+
 // ----- admin -----
 // 后台管理视频列表
 func (v *VideoHandler) videoAdminList(ctx *gin.Context) {
@@ -187,12 +215,25 @@ func (v VideoHandler) changeVideoInfo(ctx *gin.Context) {
 	resp.Success(ctx, video)
 }
 
+func (v VideoHandler) countVideoLike(ctx *gin.Context) {
+	id := ctx.Param("vid")
+	like := v.videoDao.countVideoLike(id)
+	resp.Success(ctx, like)
+}
+
+func (v VideoHandler) countVideoDislike(ctx *gin.Context) {
+	id := ctx.Param("vid")
+	dislike := v.videoDao.countVideoDisLike(id)
+	resp.Success(ctx, dislike)
+}
+
 func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video := api.Group("/video")
 	video.GET("/getOne", v.getOne)
 	video.POST("/upload", v.addVideo)
 	video.POST("/listByUid", v.getVideoListByUid)
 	video.POST("/recommend", v.videoRecommend)
+	video.POST("/hot", v.hot)
 	video.GET("/addViews/:vid", v.addViews)
 	video.GET("/addLike/:vid", v.addLike)
 	video.GET("/cancelLike/:vid", v.cancelLike)
@@ -201,6 +242,9 @@ func (v *VideoHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	video.GET("getLikeRecord/:vid", v.getLikeRecord)
 	video.GET("/getDislikeRecord/:vid", v.getDislikeRecord)
 	video.POST("/dynamic", v.dynamic)
+	video.GET("countVideoLike/:vid", v.countVideoLike)
+	video.GET("/countVideoDislike/:vid", v.countVideoDislike)
+	video.POST("/searchVideo", v.searchVideo)
 	//video.DELETE("/:id", v.delVideo)
 
 	videoAdmin := admin.Group("/video")

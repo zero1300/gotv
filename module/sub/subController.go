@@ -54,10 +54,23 @@ func (s subController) subList(ctx *gin.Context) {
 	resp.Success(ctx, list)
 }
 
+func (s subController) fansList(ctx *gin.Context) {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	var p model.Page
+	if err := ctx.ShouldBind(&p); err != nil {
+		resp.Fail(ctx, "参数异常: "+err.Error())
+		return
+	}
+	list := s.subDao.fansList(user.ID, p)
+	resp.Success(ctx, list)
+}
+
 func (s subController) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	sub := api.Group("sub")
 	sub.GET("/addSub/:uid", s.addSub)
 	sub.GET("/getSub/:uid", s.getSub)
 	sub.GET("/delSub/:uid", s.delSub)
 	sub.POST("/subList", s.subList)
+	sub.POST("fansList", s.fansList)
 }

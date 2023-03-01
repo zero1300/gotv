@@ -67,6 +67,30 @@ func (v *VideoDao) latestVideo(p model.Page) (resp.Pager, error) {
 	return pager, nil
 }
 
+func (v *VideoDao) hot(p model.Page) (resp.Pager, error) {
+	videoVos := make([]vo.VideoVo, 10)
+	var total int64
+	err := v.db.Debug().Model(model.Video{}).Order("views desc").Count(&total).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videoVos).Error
+	if err != nil {
+		return resp.Pager{}, err
+	}
+	for i := 0; i < len(videoVos); i++ {
+		var user model.User
+		user.ID = videoVos[i].UID
+		v.db.Model(model.User{}).First(&user)
+		videoVos[i].Nickname = user.Nickname
+		var count int64
+		v.db.Model(model.Comment{}).Where("vid = ?", videoVos[i].ID).Count(&count)
+		videoVos[i].Comments = count
+		videoVos[i].CreateTimeString = videoVos[i].CreateTime.Format("2006-01-02 15:04")
+	}
+
+	pager := resp.Pager{}
+	pager.List = videoVos
+	pager.Total = total
+	return pager, nil
+}
+
 func (v *VideoDao) addViews(vid string) {
 	v.db.Debug().Model(model.Video{}).Where("id = ?", vid).UpdateColumn("views", gorm.Expr("views + ?", 1))
 }
@@ -123,6 +147,17 @@ func (v *VideoDao) getLikeRecord(vid string, uid uint) int64 {
 func (v *VideoDao) getDislikeRecord(vid string, uid uint) int64 {
 	var count int64
 	v.db.Debug().Model(model.DislikeRecord{}).Where("vid = ? and uid = ?", vid, uid).Count(&count)
+	return count
+}
+func (v VideoDao) countVideoLike(vid string) int64 {
+	var count int64
+	v.db.Debug().Model(model.LikeRecordModel{}).Where("vid = ?", vid).Count(&count)
+	return count
+}
+
+func (v VideoDao) countVideoDisLike(vid string) int64 {
+	var count int64
+	v.db.Debug().Model(model.DislikeRecord{}).Where("vid = ?", vid).Count(&count)
 	return count
 }
 
@@ -187,6 +222,27 @@ func (v VideoDao) delLike(vid string) error {
 func (v VideoDao) delDislike(vid string) error {
 	var disLike model.DislikeRecord
 	return v.db.Delete(disLike, "vid = ?", vid).Error
+}
+
+// 视频搜索
+func (v *VideoDao) searchVideo(p model.Page) (resp.Pager, error) {
+	videos := make([]vo.VideoVo, 0)
+	v.db.Debug().Model(model.Video{}).Where("title LIKE ? ", "%"+p.Keyword+"%").Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videos)
+
+	for i := 0; i < len(videos); i++ {
+		var user model.User
+		user.ID = videos[i].UID
+		v.db.Model(model.User{}).First(&user)
+		videos[i].Nickname = user.Nickname
+		var count int64
+		v.db.Model(model.Comment{}).Where("vid = ?", videos[i].ID).Count(&count)
+		videos[i].Comments = count
+		videos[i].CreateTimeString = videos[i].CreateTime.Format("2006-01-02 15:04")
+	}
+	pager := resp.Pager{}
+	pager.List = videos
+	pager.Total = int64(len(videos))
+	return pager, nil
 }
 
 // ----- admin -----

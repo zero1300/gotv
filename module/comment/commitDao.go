@@ -43,6 +43,7 @@ func (c commentDao) commentList(vid string, p model.Page) (resp.Pager, error) {
 		c.db.Model(model.User{}).First(&user)
 		commentsDetailVos[i].Avatar = user.Avatar
 		commentsDetailVos[i].Nickname = user.Nickname
+		commentsDetailVos[i].CreateTimeString = commentsDetailVos[i].CreateTime.Format("2006-01-02 15:04")
 	}
 	pager := resp.Pager{}
 	pager.List = commentsDetailVos

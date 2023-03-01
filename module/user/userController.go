@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"gotv/model"
 	"gotv/resp"
 	"math/rand"
@@ -29,6 +30,12 @@ func NewUserHandler(userdao *UserDao, rc *redis.Client) *UserHandler {
 		context: context.Background(),
 		rc:      rc,
 	}
+}
+
+func GetUseIdrByCtx(ctx *gin.Context) uint {
+	obj, _ := ctx.Get("user")
+	user := obj.(*model.User)
+	return user.ID
 }
 
 const VerificationCodePre = "verification_code_"
@@ -181,10 +188,49 @@ func (u *UserHandler) getUserById(ctx *gin.Context) {
 }
 
 func (u *UserHandler) changeUserInfo(ctx *gin.Context) {
+	var token string
+
 	var user model.User
-	ctx.ShouldBind(&user)
+	err := ctx.ShouldBind(&user)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if user.ID == 0 {
+		// update redis cache
+		header := ctx.Request.Header
+		token = header.Get("token")
+		obj, _ := ctx.Get("user")
+		m := obj.(*model.User)
+		user.ID = m.ID
+	}
 	u.userDao.updateUser(user)
+
+	if token != "" {
+		key := "token_" + token
+		userPo := u.userDao.GetUser(strconv.Itoa(int(user.ID)))
+		userPoBin, _ := userPo.MarshalBinary()
+		u.rc.Set(u.context, key, userPoBin, 24*time.Hour)
+	}
 	resp.Success(ctx, user)
+}
+
+func (u UserHandler) countUserDynamic(ctx *gin.Context) {
+	uid := GetUseIdrByCtx(ctx)
+	count := u.userDao.countUserDynamic(uid)
+	resp.Success(ctx, count)
+}
+
+func (u UserHandler) countSub(ctx *gin.Context) {
+	uid := GetUseIdrByCtx(ctx)
+	count := u.userDao.countSub(uid)
+	resp.Success(ctx, count)
+}
+
+func (u UserHandler) countFans(ctx *gin.Context) {
+	uid := GetUseIdrByCtx(ctx)
+	count := u.userDao.countFans(uid)
+	resp.Success(ctx, count)
 }
 
 func (u *UserHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
@@ -207,4 +253,8 @@ func (u *UserHandler) SetUp(admin *gin.RouterGroup, api *gin.RouterGroup) {
 func (u *UserHandler) SetUp2(admin *gin.RouterGroup, api *gin.RouterGroup) {
 	user := api.Group("/user")
 	user.GET("/userinfo", u.userInfo)
+	user.POST("/update", u.changeUserInfo)
+	user.GET("/countUserDynamic", u.countUserDynamic)
+	user.GET("/countSub", u.countSub)
+	user.GET("/countFans", u.countFans)
 }
