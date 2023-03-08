@@ -166,14 +166,14 @@ func (v *VideoDao) dynamic(p model.Page, uid uint) resp.Pager {
 
 	subs := make([]model.Sub, 0)
 	v.db.Debug().Where("fans = ?", uid).Find(&subs)
-	uids := make([]string, 0)
+	uids := make([]uint64, 0)
 	for _, sub := range subs {
 		uids = append(uids, sub.UID)
 	}
 
 	var count int64
 	videos := make([]model.Video, 0)
-	v.db.Debug().Model(model.Video{}).Where("uid in ?", uids).Count(&count).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videos)
+	v.db.Debug().Model(model.Video{}).Where("uid in ?", uids).Order("create_time desc").Count(&count).Limit(p.PageSize).Offset((p.PageNum - 1) * p.PageSize).Find(&videos)
 
 	dynamics := make([]vo.Dynamic, 0)
 	for _, video := range videos {
@@ -183,6 +183,11 @@ func (v *VideoDao) dynamic(p model.Page, uid uint) resp.Pager {
 		dynamic.Video = video
 		dynamic.User = user
 		dynamics = append(dynamics, dynamic)
+		dynamic.Video.CreateTimeString = dynamic.Video.CreateTime.Format("2006-01-02 15:04")
+	}
+
+	for i := 0; i < len(dynamics); i++ {
+		dynamics[i].Video.CreateTimeString = dynamics[i].Video.CreateTime.Format("2006-01-02 15:04")
 	}
 
 	pager := resp.Pager{}

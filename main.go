@@ -10,6 +10,7 @@ import (
 	"gotv/module/sub"
 	"gotv/module/user"
 	"gotv/module/video"
+	"gotv/module/watchLater"
 	"gotv/router"
 )
 
@@ -63,6 +64,11 @@ func main() {
 	historyDao := history.NewHistoryDao(db, videoDao, userDao)
 	historyController := history.NewHistory(historyDao)
 	historyController.Setup(admin, api)
+
+	// waterLater
+	waterLaterDao := watchLater.NewWatchLater(db)
+	watchLaterController := watchLater.NewWatchLaterController(waterLaterDao)
+	watchLaterController.Setup(admin, api)
 
 	ginRouter.Engine.Run()
 

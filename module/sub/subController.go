@@ -3,6 +3,7 @@ package sub
 import (
 	"gotv/model"
 	"gotv/resp"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +24,7 @@ func (s subController) getSubVo(ctx *gin.Context) model.Sub {
 	user := obj.(*model.User)
 	uid := ctx.Param("uid")
 	sub.Fans = user.ID
-	sub.UID = uid
+	sub.UID, _ = strconv.ParseUint(uid, 10, 64)
 	return sub
 }
 

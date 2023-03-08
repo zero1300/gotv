@@ -2,7 +2,7 @@ package model
 
 type Sub struct {
 	ID   uint   `gorm:"primaryKey" json:"id,string"`
-	UID  string `json:"uid"`
+	UID  uint64 `json:"uid"`
 	Fans uint   `json:"-"`
 }
 

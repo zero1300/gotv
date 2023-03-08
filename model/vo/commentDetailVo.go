@@ -7,4 +7,5 @@ type CommentDetailVo struct {
 	Nickname         string `json:"nickname" gorm:"-"`
 	Avatar           string `json:"avatar" gorm:"-"`
 	CreateTimeString string `json:"createTime" gorm:"-"`
+	Title            string `json:"title" gorm:"-"`
 }
